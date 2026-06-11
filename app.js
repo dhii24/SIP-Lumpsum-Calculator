@@ -1,11 +1,6 @@
-// ─────────────────────────────────────────────
-//  STATE
-// ─────────────────────────────────────────────
 let currentMode = "sip"; // 'sip' | 'lump'
 
-// ─────────────────────────────────────────────
 //  MODE SWITCH
-// ─────────────────────────────────────────────
 function setMode(mode) {
   currentMode = mode;
 
@@ -22,10 +17,8 @@ function setMode(mode) {
   calculate();
 }
 
-// ─────────────────────────────────────────────
-//  CORE MATH
-// ─────────────────────────────────────────────
 
+// CORE MATH
 // SIP formula: FV = P × [((1 + r)^n - 1) / r] × (1 + r)
 // where r = monthly rate, n = total months
 function calcSIP(monthly, annualRate, years) {
@@ -43,15 +36,15 @@ function calcLump(amount, annualRate, years) {
   return { invested: amount, total, returns: total - amount };
 }
 
-// ─────────────────────────────────────────────
+
 //  CALCULATE & UPDATE UI
-// ─────────────────────────────────────────────
 function calculate() {
   // 1. Read slider values
   const monthly = Number(document.getElementById("sld-monthly").value);
   const lump = Number(document.getElementById("sld-lump").value);
   const rate = Number(document.getElementById("sld-rate").value);
   const years = Number(document.getElementById("sld-years").value);
+
 
   // 2. Update slider labels
   document.getElementById("lbl-monthly").textContent = formatINR(monthly);
@@ -60,10 +53,12 @@ function calculate() {
   document.getElementById("lbl-years").textContent =
     years + (years === 1 ? " year" : " years");
 
+
   // 3. Run calculation
   const result = currentMode === "sip"
       ? calcSIP(monthly, rate, years)
       : calcLump(lump, rate, years);
+
 
   // 4. Update result cards
   document.getElementById("res-invested").textContent = formatINR(
@@ -78,22 +73,24 @@ function calculate() {
   const returnPct = ((result.returns / result.invested) * 100).toFixed(1);
   document.getElementById("res-pct").textContent = "+" + returnPct + "%";
 
+
   // 5. Update progress bar
   const invShare = (result.invested / result.total) * 100;
   const retShare = 100 - invShare;
   document.getElementById("bar-inv").style.width = invShare.toFixed(1) + "%";
   document.getElementById("bar-ret").style.width = retShare.toFixed(1) + "%";
 
+
   // 6. Draw chart
   drawChart(monthly, lump, rate, years);
 }
 
-// ─────────────────────────────────────────────
+
 //  CHART (Canvas API)
-// ─────────────────────────────────────────────
 function drawChart(monthly, lump, rate, years) {
   const canvas = document.getElementById("chart");
   const ctx = canvas.getContext("2d");
+
 
   // Handle retina/HiDPI screens
   const dpr = window.devicePixelRatio || 1;
@@ -104,10 +101,12 @@ function drawChart(monthly, lump, rate, years) {
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, W, H);
 
+
   // Padding around the chart area
   const pad = { top: 10, right: 10, bottom: 24, left: 48 };
   const chartW = W - pad.left - pad.right;
   const chartH = H - pad.top - pad.bottom;
+
 
   // Build data points year by year
   const dataPoints = [];
@@ -123,6 +122,7 @@ function drawChart(monthly, lump, rate, years) {
     });
   }
 
+
   // Find max value for Y axis scale
   const allValues = dataPoints.flatMap((d) => [
     d.sipTotal,
@@ -131,9 +131,11 @@ function drawChart(monthly, lump, rate, years) {
   ]);
   const maxVal = Math.max(...allValues);
 
+
   // Helper: convert data → canvas pixel position
   const toX = (i) => pad.left + (i / years) * chartW;
   const toY = (val) => pad.top + chartH - (val / maxVal) * chartH;
+
 
   // Draw horizontal grid lines
   ctx.strokeStyle = "#e8edf5";
@@ -145,6 +147,7 @@ function drawChart(monthly, lump, rate, years) {
     ctx.lineTo(W - pad.right, y);
     ctx.stroke();
   }
+
 
   // Draw a line on the chart
   function drawLine(points, color, dashed = false) {
@@ -160,12 +163,14 @@ function drawChart(monthly, lump, rate, years) {
     ctx.setLineDash([]);
   }
 
+
   // Invested line (dashed)
   drawLine(
     dataPoints.map((d) => d.invested),
     "#93c5fd",
     true,
   );
+
 
   // Active mode line (solid)
   if (currentMode === "sip") {
@@ -180,6 +185,7 @@ function drawChart(monthly, lump, rate, years) {
     );
   }
 
+
   // Y-axis labels
   ctx.fillStyle = "#bbb";
   ctx.font = "10px Inter, sans-serif";
@@ -190,6 +196,7 @@ function drawChart(monthly, lump, rate, years) {
     ctx.fillText(shortFmt(val), pad.left - 4, y + 4);
   }
 
+
   // X-axis year labels
   ctx.textAlign = "center";
   const step = Math.max(1, Math.floor(years / 5));
@@ -198,10 +205,8 @@ function drawChart(monthly, lump, rate, years) {
   }
 }
 
-// ─────────────────────────────────────────────
-//  FORMATTERS
-// ─────────────────────────────────────────────
 
+//  FORMATTERS
 // Indian number format: ₹12,34,567
 function formatINR(n) {
   n = Math.round(n);
@@ -209,6 +214,7 @@ function formatINR(n) {
   if (n >= 100000) return "₹" + (n / 100000).toFixed(2) + " L";
   return "₹" + n.toLocaleString("en-IN");
 }
+
 
 // Short form for chart axis: 5L, 20K
 function shortFmt(n) {
@@ -218,8 +224,7 @@ function shortFmt(n) {
   return Math.round(n);
 }
 
-// ─────────────────────────────────────────────
+
 //  INIT
-// ─────────────────────────────────────────────
 window.addEventListener("resize", calculate);
 calculate();
