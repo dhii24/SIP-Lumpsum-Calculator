@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SIP Calculator</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css">
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>SIP &amp; Investment Calculator</h1>
+      <p class="subtitle">Compare SIP (monthly) vs Lump Sum investing</p>
+
+      <!-- Mode switcher -->
+      <div class="mode-toggle">
+        <button class="active" id="btn-sip" onclick="setMode('sip')">
+          SIP
+        </button>
+        <button id="btn-lump" onclick="setMode('lump')">Lump Sum</button>
+      </div>
+
+      <div class="grid">
+        <!-- LEFT: Inputs -->
+        <div class="card">
+          <p class="card-title">Your Inputs</p>
+
+          <!-- Monthly amount (SIP mode) -->
+          <div class="slider-group" id="grp-monthly">
+            <div class="slider-label">
+              <span>Monthly investment</span>
+              <span class="value" id="lbl-monthly">₹5,000</span>
+            </div>
+            <input
+              type="range"
+              id="sld-monthly"
+              min="500"
+              max="100000"
+              step="500"
+              value="5000"
+              oninput="calculate()"
+            />
+            <div class="range-minmax"><span>₹500</span><span>₹1L</span></div>
+          </div>
+
+          <!-- Lump sum amount (Lump mode) -->
+          <div class="slider-group" id="grp-lump" style="display: none">
+            <div class="slider-label">
+              <span>Lump sum amount</span>
+              <span class="value" id="lbl-lump">₹1,00,000</span>
+            </div>
+            <input
+              type="range"
+              id="sld-lump"
+              min="10000"
+              max="5000000"
+              step="10000"
+              value="100000"
+              oninput="calculate()"
+            />
+            <div class="range-minmax"><span>₹10K</span><span>₹50L</span></div>
+          </div>
+
+          <!-- Return rate -->
+          <div class="slider-group">
+            <div class="slider-label">
+              <span>Expected return (p.a.)</span>
+              <span class="value" id="lbl-rate">12%</span>
+            </div>
+            <input
+              type="range"
+              id="sld-rate"
+              min="1"
+              max="30"
+              step="0.5"
+              value="12"
+              oninput="calculate()"
+            />
+            <div class="range-minmax"><span>1%</span><span>30%</span></div>
+          </div>
+
+          <!-- Duration -->
+          <div class="slider-group">
+            <div class="slider-label">
+              <span>Time period</span>
+              <span class="value" id="lbl-years">10 years</span>
+            </div>
+            <input
+              type="range"
+              id="sld-years"
+              min="1"
+              max="40"
+              step="1"
+              value="10"
+              oninput="calculate()"
+            />
+            <div class="range-minmax"><span>1 yr</span><span>40 yrs</span></div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Results -->
+        <div class="card">
+          <p class="card-title">Results</p>
+
+          <div class="result-row">
+            <div class="result-box">
+              <div class="label">Amount invested</div>
+              <div class="amount" id="res-invested">₹6,00,000</div>
+            </div>
+            <div class="result-box highlight">
+              <div class="label">Total value</div>
+              <div class="amount" id="res-total">₹11,61,695</div>
+            </div>
+          </div>
+
+          <div class="result-row">
+            <div class="result-box">
+              <div class="label">Est. returns</div>
+              <div class="amount" id="res-returns">₹5,61,695</div>
+              <div class="returns-tag" id="res-pct">+93.6%</div>
+            </div>
+            <div class="result-box">
+              <div class="label">Annual rate</div>
+              <div class="amount" id="res-rate">12%</div>
+            </div>
+          </div>
+
+          <!-- Invested vs Returns bar -->
+          <div class="bar-wrap">
+            <div class="bar-labels">
+              <span>Invested</span>
+              <span>Returns</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-invested" id="bar-inv"></div>
+              <div class="bar-returns" id="bar-ret"></div>
+            </div>
+            <div class="bar-legend">
+              <div class="legend">
+                <div class="dot" style="background: #2563eb"></div>
+                Invested
+              </div>
+              <div class="legend">
+                <div class="dot" style="background: #22c55e"></div>
+                Returns
+              </div>
+            </div>
+          </div>
+
+          <!-- Growth chart -->
+          <canvas id="chart"></canvas>
+        </div>
+      </div>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
